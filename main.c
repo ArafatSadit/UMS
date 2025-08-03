@@ -85,7 +85,29 @@ int main() {
 // Actual function defination to be added later
 //Dummy functions bellow
 void addStudent(struct Student students[], int *count) {
-    printf("addStudent() called\n");
+    if(*count >= MAX_STUDENTS) {
+        printf("Maximum students reached!\n");
+        return;
+    }
+
+    struct Student new_student;
+    
+    printf("\nEnter student name: ");
+    scanf(" %[^\n]s", new_student.name);
+    
+    printf("Enter student ID: ");
+    scanf("%s", new_student.id);
+    
+    printf("Enter department: ");
+    scanf(" %[^\n]s", new_student.dept);
+    
+    printf("Enter email: ");
+    scanf("%s", new_student.email);
+    new_student.course_count = 0;
+    students[*count] = new_student;
+    (*count)++;
+    
+    printf("Student added successfully!\n");
 }
 
 void registerCourses(struct Student students[], int count) {

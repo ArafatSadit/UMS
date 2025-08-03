@@ -1,0 +1,6 @@
+.vscode/
+main
+*.exe
+*.out
+*.o
+*.class
