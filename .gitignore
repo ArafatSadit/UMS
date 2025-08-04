@@ -4,7 +4,8 @@ main
 *.out
 *.o
 *.class
-*.gitignore
+.gitignore
 app0
 app
 *.bak
+*.gitignore
