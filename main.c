@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define MAX_STUDENTS 100
+#define MAX_STUDENTS 1000
 #define MAX_COURSES 5
 #define MAX_NAME_LEN 50
 #define MAX_DEPT_LEN 30
@@ -9,14 +9,13 @@
 #define MAX_ID_LEN 15
 #define MAX_COURSE_LEN 10
 #define MAX_PASSWORD_LEN 30
+#define MAX_FACULTY 50
 
 //ROLES
-
 #define ROLE_ADMIN 0
 #define ROLE_FACULTY 1
 #define ROLE_STUDENT 2
 #define ROLE_INVALID -1
-
 
 struct Course {
     char code[MAX_COURSE_LEN];
@@ -37,9 +36,17 @@ struct Student {
     int course_count;
 };
 
+struct Faculty {
+    char name[MAX_NAME_LEN];
+    char id[MAX_ID_LEN];
+    char password[MAX_PASSWORD_LEN];
+};
+
 // Function prototypes
-int login(char user_id[], struct Student students[], int student_count);
+int login(char user_id[], struct Student students[], int student_count, struct Faculty faculty[], int faculty_count);
+
 void addStudent(struct Student students[], int *count);
+void addFaculty(struct Faculty faculty[], int *count);
 void registerCourses(struct Student students[], int count);
 void inputMarks(struct Student students[], int count);
 void calculateGrade(struct Student *student);
@@ -48,31 +55,36 @@ void searchStudent(struct Student students[], int count);
 void exportToFile(struct Student students[], int count);
 int validateMarks(float mark);
 char calculateLetterGrade(float total);
+
+int loadFaculty(struct Faculty faculty[], int *count);
+void saveFaculty(struct Faculty faculty[], int count);
+
 void saveData(struct Student students[], int count);
 int loadData(struct Student students[], int *count);
 
 int main() {
     struct Student students[MAX_STUDENTS];
     int student_count = 0;
+    struct Faculty faculty[MAX_FACULTY];
+    int faculty_count = 0;
     int choice;
     char user_id[MAX_ID_LEN];
 
-     if (loadData(students, &student_count)) {
+    loadFaculty(faculty, &faculty_count);
+
+    if (loadData(students, &student_count)) {
         printf("Loaded %d student records\n", student_count);
     }
     
-    int role = login(user_id, students, student_count); // login() returns ROLE_ADMIN, etc.
-
+    int role = login(user_id, students, student_count, faculty, faculty_count);
     if(role == ROLE_INVALID) return 1;
-
-   
 
     do {
         printf("\n--- Student Academic Management System ---\n");
 
         if(role == ROLE_ADMIN) {
             printf("1. Add Student\n");
-            printf("2. Add Faculty (Not implemented yet)\n");
+            printf("2. Add Faculty\n");
             printf("3. Register Courses\n");
             printf("4. Input Marks\n");
             printf("5. Display Student Record\n");
@@ -95,16 +107,23 @@ int main() {
 
         printf("Enter choice: ");
         scanf("%d", &choice);
+        getchar(); //get rid of newline
 
         if(role == ROLE_ADMIN) {
             switch(choice) {
                 case 1: addStudent(students, &student_count); break;
-                case 2: printf("Add Faculty: Feature not implemented.\n"); break;
+                case 2: 
+                    addFaculty(faculty, &faculty_count); 
+                    saveFaculty(faculty, faculty_count);
+                    break;
                 case 3: registerCourses(students, student_count); break;
                 case 4: inputMarks(students, student_count); break;
                 case 5: searchStudent(students, student_count); break;
                 case 6: exportToFile(students, student_count); break;
-                case 7: saveData(students, student_count); break;
+                case 7: 
+                    saveData(students, student_count); 
+                    saveFaculty(faculty, faculty_count);
+                    break;
                 case 8: break;
                 default: printf("Invalid choice!\n");
             }
@@ -134,7 +153,7 @@ int main() {
                 }
                 case 2: registerCourses(students, student_count); break;
                 case 3: searchStudent(students, student_count); break;
-                case 4:break;
+                case 4: break;
                 default: printf("Invalid choice!\n");
             }
         }
@@ -142,20 +161,14 @@ int main() {
             (role == ROLE_FACULTY && choice != 6) ||
             (role == ROLE_STUDENT && choice != 4));
 
-    if(role != ROLE_STUDENT)
+    if(role != ROLE_STUDENT) {
         saveData(students, student_count);
+        saveFaculty(faculty, faculty_count);
+    }
 
     printf("Exiting...\n");
     return 0;
 }
-
-
-
-
-
-//Implemented these new functions:
-
-//Will implement login authentication later//done
 
 void saveData(struct Student students[], int count) {
     FILE *file = fopen("student_data.txt", "w");
@@ -200,7 +213,6 @@ int loadData(struct Student students[], int *count) {
         return 0;
     }
     
-    // Prevent overflow
     if (*count > MAX_STUDENTS) *count = MAX_STUDENTS;
     
     for (int i = 0; i < *count; i++) {
@@ -211,7 +223,6 @@ int loadData(struct Student students[], int *count) {
         fscanf(file, " %[^\n]", students[i].password);
         fscanf(file, "%d", &students[i].course_count);
         
-        // Prevent course overflow
         if (students[i].course_count > MAX_COURSES) {
             students[i].course_count = MAX_COURSES;
         }
@@ -228,6 +239,7 @@ int loadData(struct Student students[], int *count) {
     fclose(file);
     return 1;
 }
+
 void addStudent(struct Student students[], int *count) {
     if(*count >= MAX_STUDENTS) {
         printf("Maximum students reached!\n");
@@ -244,7 +256,6 @@ void addStudent(struct Student students[], int *count) {
     printf("Enter password for student login: ");
     scanf("%s", new_student.password);
 
-    
     printf("Enter department: ");
     scanf(" %[^\n]", new_student.dept);
     
@@ -400,7 +411,8 @@ void exportToFile(struct Student students[], int count) {
     fclose(file);
     printf("Data exported successfully!\n");
 }
-int login(char user_id[], struct Student students[], int student_count) {
+
+int login(char user_id[], struct Student students[], int student_count, struct Faculty faculty[], int faculty_count) {
     char password[MAX_PASSWORD_LEN];
     printf("Login\nUser ID: ");
     scanf("%s", user_id);
@@ -412,9 +424,11 @@ int login(char user_id[], struct Student students[], int student_count) {
         return ROLE_ADMIN;
     }
 
-    if(strcmp(user_id, "faculty1") == 0 && strcmp(password, "fac123") == 0) {
-        printf("Faculty login successful!\n");
-        return ROLE_FACULTY;
+    for(int i = 0; i < faculty_count; i++) {
+        if(strcmp(faculty[i].id, user_id) == 0 && strcmp(faculty[i].password, password) == 0) {
+            printf("Faculty login successful!\n");
+            return ROLE_FACULTY;
+        }
     }
 
     for(int i = 0; i < student_count; i++) {
@@ -428,4 +442,41 @@ int login(char user_id[], struct Student students[], int student_count) {
     return ROLE_INVALID;
 }
 
+int loadFaculty(struct Faculty faculty[], int *count) {
+    FILE *file = fopen("faculty_data.txt", "r");
+    if (!file) return 0;
+    fscanf(file, "%d", count);
+    for(int i = 0; i < *count; i++) {
+        fscanf(file, " %[^\n]", faculty[i].name);
+        fscanf(file, " %[^\n]", faculty[i].id);
+        fscanf(file, " %[^\n]", faculty[i].password);
+    }
+    fclose(file);
+    return 1;
+}
 
+void saveFaculty(struct Faculty faculty[], int count) {
+    FILE *file = fopen("faculty_data.txt", "w");
+    if (!file) return;
+    fprintf(file, "%d\n", count);
+    for(int i = 0; i < count; i++) {
+        fprintf(file, "%s\n%s\n%s\n",
+            faculty[i].name, faculty[i].id, faculty[i].password);
+    }
+    fclose(file);
+}
+
+void addFaculty(struct Faculty faculty[], int *count) {
+    if (*count >= MAX_FACULTY) {
+        printf("Maximum faculty reached!\n");
+        return;
+    }
+    printf("Enter faculty name: ");
+    scanf(" %[^\n]", faculty[*count].name);
+    printf("Enter faculty ID: ");
+    scanf("%s", faculty[*count].id);
+    printf("Enter password: ");
+    scanf("%s", faculty[*count].password);
+    (*count)++;
+    printf("Faculty added successfully!\n");
+}
