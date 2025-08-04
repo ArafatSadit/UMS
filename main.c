@@ -101,8 +101,7 @@ int main() {
         } else if(role == ROLE_STUDENT) {
             printf("1. Display My Info\n");
             printf("2. Register Course\n");
-            printf("3. Display Student Record\n");
-            printf("4. Exit\n");
+            printf("3. Exit\n");
         }
 
         printf("Enter choice: ");
@@ -152,19 +151,18 @@ int main() {
                     break;
                 }
                 case 2: registerCourses(students, student_count); break;
-                case 3: searchStudent(students, student_count); break;
-                case 4: break;
+                case 3:  break;
                 default: printf("Invalid choice!\n");
             }
         }
     } while((role == ROLE_ADMIN && choice != 8) ||
             (role == ROLE_FACULTY && choice != 6) ||
-            (role == ROLE_STUDENT && choice != 4));
+            (role == ROLE_STUDENT && choice != 3));
 
-    if(role != ROLE_STUDENT) {
+    
         saveData(students, student_count);
         saveFaculty(faculty, faculty_count);
-    }
+    
 
     printf("Exiting...\n");
     return 0;
