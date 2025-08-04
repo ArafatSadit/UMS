@@ -74,7 +74,7 @@ int main() {
         }
     } while(choice != 7);
 
-    // Save before exit
+   
     saveData(students, student_count);
     printf("Data saved. Exiting...\n");
     return 0;
