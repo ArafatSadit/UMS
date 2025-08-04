@@ -1,4 +1,4 @@
-2
+3
 Md. Arafat Sadit
 2422128
 ECE
@@ -27,3 +27,8 @@ PHY107
 48.0
 93.0
 A
+Ridwan
+2422130
+ECE
+ridwan@mail.com
+0

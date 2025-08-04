@@ -9,6 +9,14 @@
 #define MAX_ID_LEN 15
 #define MAX_COURSE_LEN 10
 
+//ROLES
+
+#define ROLE_ADMIN 0
+#define ROLE_FACULTY 1
+#define ROLE_STUDENT 2
+#define ROLE_INVALID -1
+
+
 struct Course {
     char code[MAX_COURSE_LEN];
     float quiz;
@@ -28,6 +36,7 @@ struct Student {
 };
 
 // Function prototypes
+int login(char user_id[]);
 void addStudent(struct Student students[], int *count);
 void registerCourses(struct Student students[], int count);
 void inputMarks(struct Student students[], int count);
@@ -44,41 +53,96 @@ int main() {
     struct Student students[MAX_STUDENTS];
     int student_count = 0;
     int choice;
+    char user_id[MAX_ID_LEN];
+    
+    int role = login(user_id); // login() returns ROLE_ADMIN, etc.
+    if(role == ROLE_INVALID) return 1;
 
-    // Load existing data
     if (loadData(students, &student_count)) {
         printf("Loaded %d student records\n", student_count);
     }
 
     do {
         printf("\n--- Student Academic Management System ---\n");
-        printf("1. Add Student\n");
-        printf("2. Register Courses\n");
-        printf("3. Input Marks\n");
-        printf("4. Display Student Record\n");
-        printf("5. Export Report to File\n");
-        printf("6. Save Data\n");
-        printf("7. Exit\n");
+
+        if(role == ROLE_ADMIN) {
+            printf("1. Add Student\n");
+            printf("2. Add Faculty (Not implemented yet)\n");
+            printf("3. Register Courses\n");
+            printf("4. Input Marks\n");
+            printf("5. Display Student Record\n");
+            printf("6. Export Report\n");
+            printf("7. Save Data\n");
+            printf("8. Exit\n");
+        } else if(role == ROLE_FACULTY) {
+            printf("1. Register Courses\n");
+            printf("2. Input Marks\n");
+            printf("3. Display Student Record\n");
+            printf("4. Export Report\n");
+            printf("5. Save Data\n");
+            printf("6. Exit\n");
+        } else if(role == ROLE_STUDENT) {
+            printf("1. Display My Info\n");
+            printf("2. Register Course\n");
+            printf("3. Exit\n");
+        }
+
         printf("Enter choice: ");
         scanf("%d", &choice);
 
-        switch(choice) {
-            case 1: addStudent(students, &student_count); break;
-            case 2: registerCourses(students, student_count); break;
-            case 3: inputMarks(students, student_count); break;
-            case 4: searchStudent(students, student_count); break;
-            case 5: exportToFile(students, student_count); break;
-            case 6: saveData(students, student_count); break;
-            case 7: break;
-            default: printf("Invalid choice!\n");
+        if(role == ROLE_ADMIN) {
+            switch(choice) {
+                case 1: addStudent(students, &student_count); break;
+                case 2: printf("Add Faculty: Feature not implemented.\n"); break;
+                case 3: registerCourses(students, student_count); break;
+                case 4: inputMarks(students, student_count); break;
+                case 5: searchStudent(students, student_count); break;
+                case 6: exportToFile(students, student_count); break;
+                case 7: saveData(students, student_count); break;
+                case 8: break;
+                default: printf("Invalid choice!\n");
+            }
+        } else if(role == ROLE_FACULTY) {
+            switch(choice) {
+                case 1: registerCourses(students, student_count); break;
+                case 2: inputMarks(students, student_count); break;
+                case 3: searchStudent(students, student_count); break;
+                case 4: exportToFile(students, student_count); break;
+                case 5: saveData(students, student_count); break;
+                case 6: break;
+                default: printf("Invalid choice!\n");
+            }
+        } else if(role == ROLE_STUDENT) {
+            switch(choice) {
+                case 1: {
+                    int found = 0;
+                    for(int i = 0; i < student_count; i++) {
+                        if(strcmp(students[i].id, user_id) == 0) {
+                            displayStudent(students[i]);
+                            found = 1;
+                            break;
+                        }
+                    }
+                    if(!found) printf("Student not found!\n");
+                    break;
+                }
+                case 2: registerCourses(students, student_count); break;
+                case 3: break;
+                default: printf("Invalid choice!\n");
+            }
         }
-    } while(choice != 7);
+    } while((role == ROLE_ADMIN && choice != 8) ||
+            (role == ROLE_FACULTY && choice != 6) ||
+            (role == ROLE_STUDENT && choice != 3));
 
-   
-    saveData(students, student_count);
-    printf("Data saved. Exiting...\n");
+    if(role != ROLE_STUDENT)
+        saveData(students, student_count);
+
+    printf("Exiting...\n");
     return 0;
 }
+
+
 
 
 
@@ -324,3 +388,26 @@ void exportToFile(struct Student students[], int count) {
     fclose(file);
     printf("Data exported successfully!\n");
 }
+int login(char user_id[]) {
+    char password[30];
+    printf("Login\n");
+    printf("User ID: ");
+    scanf("%s", user_id);
+    printf("Password: ");
+    scanf("%s", password);
+
+    if(strcmp(user_id, "admin") == 0 && strcmp(password, "admin123") == 0) {
+        printf("Admin login successful!\n");
+        return ROLE_ADMIN;
+    } else if(strcmp(user_id, "faculty1") == 0 && strcmp(password, "fac123") == 0) {
+        printf("Faculty login successful!\n");
+        return ROLE_FACULTY;
+    } else if(strcmp(user_id, password) == 0) {
+        printf("Student login successful!\n");
+        return ROLE_STUDENT;
+    }
+
+    printf("Invalid credentials!\n");
+    return ROLE_INVALID;
+}
+
