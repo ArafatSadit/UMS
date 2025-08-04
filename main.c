@@ -38,7 +38,7 @@ struct Student {
 };
 
 // Function prototypes
-int login(char user_id[]);
+int login(char user_id[], struct Student students[], int student_count);
 void addStudent(struct Student students[], int *count);
 void registerCourses(struct Student students[], int count);
 void inputMarks(struct Student students[], int count);
@@ -56,13 +56,16 @@ int main() {
     int student_count = 0;
     int choice;
     char user_id[MAX_ID_LEN];
-    
-    int role = login(user_id); // login() returns ROLE_ADMIN, etc.
-    if(role == ROLE_INVALID) return 1;
 
-    if (loadData(students, &student_count)) {
+     if (loadData(students, &student_count)) {
         printf("Loaded %d student records\n", student_count);
     }
+    
+    int role = login(user_id, students, student_count); // login() returns ROLE_ADMIN, etc.
+
+    if(role == ROLE_INVALID) return 1;
+
+   
 
     do {
         printf("\n--- Student Academic Management System ---\n");
@@ -86,7 +89,8 @@ int main() {
         } else if(role == ROLE_STUDENT) {
             printf("1. Display My Info\n");
             printf("2. Register Course\n");
-            printf("3. Exit\n");
+            printf("3. Display Student Record\n");
+            printf("4. Exit\n");
         }
 
         printf("Enter choice: ");
@@ -129,13 +133,14 @@ int main() {
                     break;
                 }
                 case 2: registerCourses(students, student_count); break;
-                case 3: break;
+                case 3: searchStudent(students, student_count); break;
+                case 4:break;
                 default: printf("Invalid choice!\n");
             }
         }
     } while((role == ROLE_ADMIN && choice != 8) ||
             (role == ROLE_FACULTY && choice != 6) ||
-            (role == ROLE_STUDENT && choice != 3));
+            (role == ROLE_STUDENT && choice != 4));
 
     if(role != ROLE_STUDENT)
         saveData(students, student_count);
@@ -204,7 +209,6 @@ int loadData(struct Student students[], int *count) {
         fscanf(file, " %[^\n]", students[i].dept);
         fscanf(file, " %[^\n]", students[i].email);
         fscanf(file, " %[^\n]", students[i].password);
-
         fscanf(file, "%d", &students[i].course_count);
         
         // Prevent course overflow
@@ -230,17 +234,16 @@ void addStudent(struct Student students[], int *count) {
         return;
     }
     struct Student new_student;
-    printf("Enter password for student login: ");
-    scanf("%s", new_student.password);
-
-
-   
     
     printf("\nEnter student name: ");
     scanf(" %[^\n]", new_student.name);
     
     printf("Enter student ID: ");
     scanf("%s", new_student.id);
+
+    printf("Enter password for student login: ");
+    scanf("%s", new_student.password);
+
     
     printf("Enter department: ");
     scanf(" %[^\n]", new_student.dept);
@@ -397,10 +400,9 @@ void exportToFile(struct Student students[], int count) {
     fclose(file);
     printf("Data exported successfully!\n");
 }
-int login(char user_id[]) {
-    char password[30];
-    printf("Login\n");
-    printf("User ID: ");
+int login(char user_id[], struct Student students[], int student_count) {
+    char password[MAX_PASSWORD_LEN];
+    printf("Login\nUser ID: ");
     scanf("%s", user_id);
     printf("Password: ");
     scanf("%s", password);
@@ -408,15 +410,22 @@ int login(char user_id[]) {
     if(strcmp(user_id, "admin") == 0 && strcmp(password, "admin123") == 0) {
         printf("Admin login successful!\n");
         return ROLE_ADMIN;
-    } else if(strcmp(user_id, "faculty1") == 0 && strcmp(password, "fac123") == 0) {
+    }
+
+    if(strcmp(user_id, "faculty1") == 0 && strcmp(password, "fac123") == 0) {
         printf("Faculty login successful!\n");
         return ROLE_FACULTY;
-    } else if(strcmp(user_id, password) == 0) {
-        printf("Student login successful!\n");
-        return ROLE_STUDENT;
+    }
+
+    for(int i = 0; i < student_count; i++) {
+        if(strcmp(students[i].id, user_id) == 0 && strcmp(students[i].password, password) == 0) {
+            printf("Student login successful!\n");
+            return ROLE_STUDENT;
+        }
     }
 
     printf("Invalid credentials!\n");
     return ROLE_INVALID;
 }
+
 
