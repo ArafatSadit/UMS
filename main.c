@@ -93,13 +93,13 @@ void addStudent(struct Student students[], int *count) {
     struct Student new_student;
     
     printf("\nEnter student name: ");
-    scanf(" %[^\n]s", new_student.name);
+    scanf(" %[^\n]", new_student.name);
     
     printf("Enter student ID: ");
     scanf("%s", new_student.id);
     
     printf("Enter department: ");
-    scanf(" %[^\n]s", new_student.dept);
+    scanf(" %[^\n]", new_student.dept);
     
     printf("Enter email: ");
     scanf("%s", new_student.email);

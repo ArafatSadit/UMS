@@ -4,3 +4,4 @@ main
 *.out
 *.o
 *.class
+*.gitignore
