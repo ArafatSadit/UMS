@@ -1,1 +1,29 @@
-
+2
+Md. Arafat Sadit
+2422128
+ECE
+arafat.sadit@uni.com
+2
+EEE111
+17.0
+27.0
+49.0
+93.0
+A
+CSE115
+18.0
+27.0
+46.0
+91.0
+A
+Asra Khaled
+2422129
+ECE
+asra.khaled@uni.com
+1
+PHY107
+20.0
+25.0
+48.0
+93.0
+A

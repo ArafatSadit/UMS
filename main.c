@@ -80,9 +80,11 @@ int main() {
     return 0;
 }
 
-// ... [All other functions remain unchanged] ...
 
-// Add these new functions:
+
+//Implemented these new functions:
+
+//Will implement login authentication later
 
 void saveData(struct Student students[], int count) {
     FILE *file = fopen("student_data.txt", "w");
@@ -118,7 +120,7 @@ void saveData(struct Student students[], int count) {
 int loadData(struct Student students[], int *count) {
     FILE *file = fopen("student_data.txt", "r");
     if (!file) {
-        return 0;  // File doesn't exist (first run)
+        return 0;  // When file doesn't exist  i.e (first run)
     }
 
     if (fscanf(file, "%d", count) != 1) {
