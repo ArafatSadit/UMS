@@ -123,12 +123,36 @@ void calculateGrade(struct Student *student) {
 }
 
 void displayStudent(struct Student student) {
-    printf("displayStudent() called\n");
+    printf("\nName: %s\nID: %s\nDept: %s\nEmail: %s\n", 
+           student.name, student.id, student.dept, student.email);
+    
+    printf("\nCourses:\n");
+    for(int i = 0; i < student.course_count; i++) {
+        printf("  %s: Quiz=%.2f, Mid=%.2f, Final=%.2f, Total=%.2f, Grade=%c\n",
+               student.courses[i].code,
+               student.courses[i].quiz,
+               student.courses[i].midterm,
+               student.courses[i].final,
+               student.courses[i].total,
+               student.courses[i].grade)
+            ;
+    }
 }
 
 void searchStudent(struct Student students[], int count) {
-    printf("searchStudent() called\n");
+    char id[MAX_ID_LEN];
+    printf("Enter student ID: ");
+    scanf("%s", id);
+    
+    for(int i = 0; i < count; i++) {
+        if(strcmp(students[i].id, id) == 0) {
+            displayStudent(students[i]);
+            return;
+        }
+    }
+    printf("Student not found!\n");
 }
+
 
 void exportToFile(struct Student students[], int count) {
     printf("exportToFile() called\n");
