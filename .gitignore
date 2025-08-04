@@ -5,3 +5,6 @@ main
 *.o
 *.class
 *.gitignore
+app0
+app
+*.bak
