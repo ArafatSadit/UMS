@@ -8,6 +8,7 @@
 #define MAX_EMAIL_LEN 50
 #define MAX_ID_LEN 15
 #define MAX_COURSE_LEN 10
+#define MAX_PASSWORD_LEN 30
 
 //ROLES
 
@@ -31,6 +32,7 @@ struct Student {
     char id[MAX_ID_LEN];
     char dept[MAX_DEPT_LEN];
     char email[MAX_EMAIL_LEN];
+    char password[MAX_PASSWORD_LEN];
     struct Course courses[MAX_COURSES];
     int course_count;
 };
@@ -148,7 +150,7 @@ int main() {
 
 //Implemented these new functions:
 
-//Will implement login authentication later
+//Will implement login authentication later//done
 
 void saveData(struct Student students[], int count) {
     FILE *file = fopen("student_data.txt", "w");
@@ -160,11 +162,12 @@ void saveData(struct Student students[], int count) {
     fprintf(file, "%d\n", count);
     
     for (int i = 0; i < count; i++) {
-        fprintf(file, "%s\n%s\n%s\n%s\n%d\n", 
+        fprintf(file, "%s\n%s\n%s\n%s\n%s\n%d\n", 
                students[i].name,
                students[i].id,
                students[i].dept,
                students[i].email,
+               students[i].password,
                students[i].course_count);
         
         for (int j = 0; j < students[i].course_count; j++) {
@@ -200,6 +203,8 @@ int loadData(struct Student students[], int *count) {
         fscanf(file, " %[^\n]", students[i].id);
         fscanf(file, " %[^\n]", students[i].dept);
         fscanf(file, " %[^\n]", students[i].email);
+        fscanf(file, " %[^\n]", students[i].password);
+
         fscanf(file, "%d", &students[i].course_count);
         
         // Prevent course overflow
@@ -224,17 +229,21 @@ void addStudent(struct Student students[], int *count) {
         printf("Maximum students reached!\n");
         return;
     }
-
     struct Student new_student;
+    printf("Enter password for student login: ");
+    scanf("%s", new_student.password);
+
+
+   
     
     printf("\nEnter student name: ");
-    scanf(" %[^\n]s", new_student.name);
+    scanf(" %[^\n]", new_student.name);
     
     printf("Enter student ID: ");
     scanf("%s", new_student.id);
     
     printf("Enter department: ");
-    scanf(" %[^\n]s", new_student.dept);
+    scanf(" %[^\n]", new_student.dept);
     
     printf("Enter email: ");
     scanf("%s", new_student.email);
