@@ -4,5 +4,5 @@ CSE-115 Lab Project
 Group 6
 
 
-Submission Date: 15th of August
+Submission Date: 12th of August
 
