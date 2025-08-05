@@ -43,73 +43,12 @@ struct Faculty {
 };
 
 // Function prototypes
-// New login function for Admins
-int adminLogin() {
-    char id[MAX_ID_LEN];
-    char password[MAX_PASSWORD_LEN];
 
-    printf("\n--- Admin Login ---\n");
-    printf("Enter Admin ID: ");
-    scanf("%s", id);
-    printf("Enter Password: ");
-    scanf("%s", password);
 
-    if (strcmp(id, "admin") == 0 && strcmp(password, "admin123") == 0) {
-        printf("Admin login successful!\n");
-        return 1; // Success
-    }
-    
-    printf("Invalid credentials!\n");
-    return 0; // Failure
-}
+int adminLogin();
+int facultyLogin(struct Faculty faculty[], int faculty_count, char logged_in_id[]);
+int studentLogin(struct Student student[], int student_count, char logged_in_id[]);
 
-// New login function for Faculty
-// Note: logged_in_id is an "output" parameter to store the user's ID upon success
-int facultyLogin(struct Faculty faculty[], int faculty_count, char logged_in_id[]) {
-    char id[MAX_ID_LEN];
-    char password[MAX_PASSWORD_LEN];
-
-    printf("\n--- Faculty Login ---\n");
-    printf("Enter Faculty ID: ");
-    scanf("%s", id);
-    printf("Enter Password: ");
-    scanf("%s", password);
-
-    for (int i = 0; i < faculty_count; i++) {
-        if (strcmp(faculty[i].id, id) == 0 && strcmp(faculty[i].password, password) == 0) {
-            printf("Faculty login successful!\n");
-            strcpy(logged_in_id, id); // Save the ID of the logged-in user
-            return 1; // Success
-        }
-    }
-
-    printf("Invalid credentials!\n");
-    return 0; // Failure
-}
-
-// New login function for Students
-// Note: logged_in_id is an "output" parameter
-int studentLogin(struct Student students[], int student_count, char logged_in_id[]) {
-    char id[MAX_ID_LEN];
-    char password[MAX_PASSWORD_LEN];
-
-    printf("\n--- Student Login ---\n");
-    printf("Enter Student ID: ");
-    scanf("%s", id);
-    printf("Enter Password: ");
-    scanf("%s", password);
-
-    for (int i = 0; i < student_count; i++) {
-        if (strcmp(students[i].id, id) == 0 && strcmp(students[i].password, password) == 0) {
-            printf("Student login successful!\n");
-            strcpy(logged_in_id, id); // Save the ID of the logged-in user
-            return 1; // Success
-        }
-    }
-
-    printf("Invalid credentials!\n");
-    return 0; // Failure
-}
 
 void addStudent(struct Student students[], int *count);
 void addFaculty(struct Faculty faculty[], int *count);
@@ -122,11 +61,13 @@ void exportToFile(struct Student students[], int count);
 int validateMarks(float mark);
 char calculateLetterGrade(float total);
 
+
 int loadFaculty(struct Faculty faculty[], int *count);
 void saveFaculty(struct Faculty faculty[], int count);
 
-void saveData(struct Student students[], int count);
 int loadData(struct Student students[], int *count);
+void saveData(struct Student students[], int count);
+
 
 int main() {
     struct Student students[MAX_STUDENTS];
@@ -138,12 +79,15 @@ int main() {
     int role = ROLE_INVALID;
 
     // Load all data at the start
-    loadFaculty(faculty, &faculty_count);
+   if (loadFaculty(faculty, &faculty)==1) {
+        printf("Loaded %d faculty records.\n", faculty_count);
+    }
+
     if (loadData(students, &student_count)) {
         printf("Loaded %d student records.\n", student_count);
     }
 
-    // --- New Login Loop ---
+   
     int login_choice;
     while (role == ROLE_INVALID) {
         printf("\n--- University Login Portal ---\n");
@@ -156,18 +100,18 @@ int main() {
         getchar(); // consume newline
 
         switch (login_choice) {
-            case 1: // Admin
+            case 1:
                 if (adminLogin()) {
                     role = ROLE_ADMIN;
-                    strcpy(user_id, "admin"); // Store identifier
+                    strcpy(user_id, "admin");
                 }
                 break;
-            case 2: // Faculty
+            case 2:
                 if (facultyLogin(faculty, faculty_count, user_id)) {
                     role = ROLE_FACULTY;
                 }
                 break;
-            case 3: // Student
+            case 3:
                 if (studentLogin(students, student_count, user_id)) {
                     role = ROLE_STUDENT;
                 }
@@ -179,15 +123,15 @@ int main() {
                 printf("Invalid choice. Please try again.\n");
         }
     }
-    // --- End of New Login Loop ---
+   
 
 
-    // This part remains mostly the same, handling the user's actions after login
+    // after login role based options
     do {
         printf("\n--- University Academic Management System ---\n");
 
         if(role == ROLE_ADMIN) {
-            // Admin Menu (same as before)
+            
             printf("1. Add Student\n");
             printf("2. Add Faculty\n");
             printf("3. Register Courses\n");
@@ -197,7 +141,7 @@ int main() {
             printf("7. Save Data\n");
             printf("8. Exit\n");
         } else if(role == ROLE_FACULTY) {
-            // Faculty Menu (same as before)
+          
             printf("1. Register Courses\n");
             printf("2. Input Marks\n");
             printf("3. Display Student Record\n");
@@ -205,7 +149,7 @@ int main() {
             printf("5. Save Data\n");
             printf("6. Exit\n");
         } else if(role == ROLE_STUDENT) {
-            // Student Menu (same as before)
+            
             printf("1. Display My Info\n");
             printf("2. Register Course\n");
             printf("3. Exit\n");
@@ -213,9 +157,9 @@ int main() {
 
         printf("Enter choice: ");
         scanf("%d", &choice);
-        getchar(); //get rid of newline
+        getchar(); //get rid of newline left by scanf
 
-        // The switch statements for handling choices remain identical to your original code
+        
         if(role == ROLE_ADMIN) {
             switch(choice) {
                 case 1: addStudent(students, &student_count); break;
@@ -258,7 +202,7 @@ int main() {
                     if(!found) printf("Error: Could not find your student record.\n");
                     break;
                 }
-                case 2: registerCourses(students, student_count); break; // You might want to adapt this to auto-fill the student's ID
+                case 2: registerCourses(students, student_count); break; // autosuggesting would be good if we could implement this
                 case 3:  break;
                 default: printf("Invalid choice!\n");
             }
@@ -271,7 +215,7 @@ int main() {
     saveData(students, student_count);
     saveFaculty(faculty, faculty_count);
     
-    printf("Exiting...\n");
+    printf("Exiting program...\n");
     return 0;
 }
 
@@ -585,3 +529,73 @@ void addFaculty(struct Faculty faculty[], int *count) {
     (*count)++;
     printf("Faculty added successfully!\n");
 }
+
+//Authentication
+
+int adminLogin() {
+    char id[MAX_ID_LEN];
+    char password[MAX_PASSWORD_LEN];
+
+    printf("\n--- Admin Login ---\n");
+    printf("Enter Admin ID: ");
+    scanf("%s", id);
+    printf("Enter Password: ");
+    scanf("%s", password);
+
+    if (strcmp(id, "admin") == 0 && strcmp(password, "admin123") == 0) {
+        printf("Admin login successful!\n");
+        return 1; // Success
+    }
+    
+    printf("Invalid credentials!\n");
+    return 0; // Failure
+}
+
+// New login function for Faculty
+// Note: logged_in_id is an "output" parameter to store the user's ID upon success
+int facultyLogin(struct Faculty faculty[], int faculty_count, char logged_in_id[]) {
+    char id[MAX_ID_LEN];
+    char password[MAX_PASSWORD_LEN];
+
+    printf("\n--- Faculty Login ---\n");
+    printf("Enter Faculty ID: ");
+    scanf("%s", id);
+    printf("Enter Password: ");
+    scanf("%s", password);
+
+    for (int i = 0; i < faculty_count; i++) {
+        if (strcmp(faculty[i].id, id) == 0 && strcmp(faculty[i].password, password) == 0) {
+            printf("Faculty login successful!\n");
+            strcpy(logged_in_id, id); // Save the ID of the logged-in user
+            return 1; // Success
+        }
+    }
+
+    printf("Invalid credentials!\n");
+    return 0; // Failure
+}
+
+// New login function for Students
+// Note: logged_in_id is an "output" parameter
+int studentLogin(struct Student students[], int student_count, char logged_in_id[]) {
+    char id[MAX_ID_LEN];
+    char password[MAX_PASSWORD_LEN];
+
+    printf("\n--- Student Login ---\n");
+    printf("Enter Student ID: ");
+    scanf("%s", id);
+    printf("Enter Password: ");
+    scanf("%s", password);
+
+    for (int i = 0; i < student_count; i++) {
+        if (strcmp(students[i].id, id) == 0 && strcmp(students[i].password, password) == 0) {
+            printf("Student login successful!\n");
+            strcpy(logged_in_id, id); // Save the ID of the logged-in user
+            return 1; // Success
+        }
+    }
+
+    printf("Invalid credentials!\n");
+    return 0; // Failure
+}
+
