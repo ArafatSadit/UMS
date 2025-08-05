@@ -45,6 +45,8 @@ struct Faculty {
 // Function prototypes
 
 
+
+
 int adminLogin();
 int facultyLogin(struct Faculty faculty[], int faculty_count, char logged_in_id[]);
 int studentLogin(struct Student student[], int student_count, char logged_in_id[]);
