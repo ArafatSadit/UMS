@@ -91,31 +91,34 @@ int main() {
     int login_choice;
     while (role == ROLE_INVALID) {
         printf("\n--- University Login Portal ---\n");
-        printf("1. Admin Login\n");
+        printf("1. Student Login\n");
         printf("2. Faculty Login\n");
-        printf("3. Student Login\n");
+        printf("3. Admin Login\n");
         printf("4. Exit\n");
         printf("Select your role: ");
         scanf("%d", &login_choice);
         getchar(); // consume newline
 
         switch (login_choice) {
-            case 1:
-                if (adminLogin()) {
-                    role = ROLE_ADMIN;
-                    strcpy(user_id, "admin");
+             case 1:
+                if (studentLogin(students, student_count, user_id)) {
+                    role = ROLE_STUDENT;
                 }
                 break;
+           
             case 2:
                 if (facultyLogin(faculty, faculty_count, user_id)) {
                     role = ROLE_FACULTY;
                 }
                 break;
-            case 3:
-                if (studentLogin(students, student_count, user_id)) {
-                    role = ROLE_STUDENT;
+
+             case 3:
+                if (adminLogin()) {
+                    role = ROLE_ADMIN;
+                    strcpy(user_id, "admin");
                 }
                 break;
+           
             case 4:
                 printf("Exiting...\n");
                 return 0; // Exit program
