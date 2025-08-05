@@ -79,7 +79,7 @@ int main() {
     int role = ROLE_INVALID;
 
     // Load all data at the start
-   if (loadFaculty(faculty, &faculty)==1) {
+   if (loadFaculty(faculty, &faculty_count)==1) {
         printf("Loaded %d faculty records.\n", faculty_count);
     }
 
