@@ -144,7 +144,7 @@ int main() {
             printf("3. Register Courses\n");
             printf("4. Input Marks\n");
             printf("5. Search Student Info\n");
-            printf("5. Display Student Record\n");
+            printf("6. Display Student Record\n");
             printf("7. Export Report\n");
             printf("8. Save Data\n");
             printf("9. Exit\n");
@@ -152,10 +152,11 @@ int main() {
           
             printf("1. Register Courses\n");
             printf("2. Input Marks\n");
-            printf("3. Display Student Record\n");
-            printf("4. Export Report\n");
-            printf("5. Save Data\n");
-            printf("6. Exit\n");
+            printf("3. Search Student Info\n");
+            printf("4. Display Student Record\n");
+            printf("5. Export Report\n");
+            printf("6. Save Data\n");
+            printf("7. Exit\n");
         } else if(role == ROLE_STUDENT) {
             
             printf("1. Display My Info\n");
@@ -177,13 +178,14 @@ int main() {
                     break;
                 case 3: registerCourses(students, student_count); break;
                 case 4: inputMarks(students, student_count); break;
-                case 5: searchStudent(students, student_count); break;
-                case 6: exportToFile(students, student_count); break;
-                case 7: 
+                case 5: partialSearch(students, student_count); break;
+                case 6:searchStudent(students,student_count);
+                case 7: exportToFile(students, student_count); break;
+                case 8: 
                     saveData(students, student_count); 
                     saveFaculty(faculty, faculty_count);
                     break;
-                case 8: break;
+                case 9: break;
                 default: printf("Invalid choice!\n");
             }
         } else if(role == ROLE_FACULTY) {
@@ -216,7 +218,7 @@ int main() {
                 default: printf("Invalid choice!\n");
             }
         }
-    } while((role == ROLE_ADMIN && choice != 8) ||
+    } while((role == ROLE_ADMIN && choice != 9) ||
             (role == ROLE_FACULTY && choice != 7) ||
             (role == ROLE_STUDENT && choice != 3));
 
