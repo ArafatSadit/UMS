@@ -143,7 +143,7 @@ int main() {
             printf("2. Add Faculty\n");
             printf("3. Register Courses\n");
             printf("4. Input Marks\n");
-            printf("5. Search Student Info\n");
+            printf("5. Search Student by Name\n");
             printf("6. Display Student Record\n");
             printf("7. Export Report\n");
             printf("8. Save Data\n");
@@ -152,7 +152,7 @@ int main() {
           
             printf("1. Register Courses\n");
             printf("2. Input Marks\n");
-            printf("3. Search Student Info\n");
+            printf("3. Search Student by Name\n");
             printf("4. Display Student Record\n");
             printf("5. Export Report\n");
             printf("6. Save Data\n");
@@ -609,24 +609,32 @@ int studentLogin(struct Student students[], int student_count, char logged_in_id
     printf("Invalid credentials!\n");
     return 0; // Failure
 }
-void partialSearch(struct Student students[MAX_STUDENTS],int count)
+void partialSearch(struct Student students[MAX_STUDENTS], int count)
 {
-    int i,found=0;
+    int i, found = 0;
     char search_term[MAX_NAME_LEN];
-    printf("Enter Search Query : ");
-    scanf(" %[^\n]",search_term);
+    printf("Enter Name or ID to search: ");
+    scanf(" %[^\n]", search_term);
 
-    for(i=0;i<count;i++)
-    {
-        if(strstr(students[i].name,search_term))
-        {
-            printf("ID: %d, Name: %s\n", students[i].id, students[i].name);
-            found=1;
+    for (i = 0; i < count; i++) {
+        if (strstr(students[i].name, search_term) || strstr(students[i].id, search_term)) {
+            printf("\nName: %s\nID: %s\nDept: %s\nEmail: %s\n", 
+                students[i].name, students[i].id, students[i].dept, students[i].email);
 
+            for (int j = 0; j < students[i].course_count; j++) {
+                printf("  %s: Quiz=%.1f, Mid=%.1f, Final=%.1f, Total=%.1f, Grade=%c\n",
+                    students[i].courses[j].code,
+                    students[i].courses[j].quiz,
+                    students[i].courses[j].midterm,
+                    students[i].courses[j].final,
+                    students[i].courses[j].total,
+                    students[i].courses[j].grade);
+            }
+
+            found = 1;
         }
-       
     }
-     if(!found) printf("No matches found\n");
 
+    if (!found)
+        printf("No matches found\n");
 }
-
