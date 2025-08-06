@@ -44,6 +44,8 @@ struct Faculty {
 
 // Function prototypes
 
+void partialSearch(struct Student students[MAX_STUDENTS],int count);
+
 
 
 
@@ -141,10 +143,11 @@ int main() {
             printf("2. Add Faculty\n");
             printf("3. Register Courses\n");
             printf("4. Input Marks\n");
+            printf("5. Search Student Info\n");
             printf("5. Display Student Record\n");
-            printf("6. Export Report\n");
-            printf("7. Save Data\n");
-            printf("8. Exit\n");
+            printf("7. Export Report\n");
+            printf("8. Save Data\n");
+            printf("9. Exit\n");
         } else if(role == ROLE_FACULTY) {
           
             printf("1. Register Courses\n");
@@ -187,10 +190,11 @@ int main() {
             switch(choice) {
                 case 1: registerCourses(students, student_count); break;
                 case 2: inputMarks(students, student_count); break;
-                case 3: searchStudent(students, student_count); break;
-                case 4: exportToFile(students, student_count); break;
-                case 5: saveData(students, student_count); break;
-                case 6: break;
+                case 3: partialSearch(students,student_count);break;
+                case 4: searchStudent(students, student_count); break;
+                case 5: exportToFile(students, student_count); break;
+                case 6: saveData(students, student_count); break;
+                case 7: break;
                 default: printf("Invalid choice!\n");
             }
         } else if(role == ROLE_STUDENT) {
@@ -213,7 +217,7 @@ int main() {
             }
         }
     } while((role == ROLE_ADMIN && choice != 8) ||
-            (role == ROLE_FACULTY && choice != 6) ||
+            (role == ROLE_FACULTY && choice != 7) ||
             (role == ROLE_STUDENT && choice != 3));
 
     
@@ -602,5 +606,25 @@ int studentLogin(struct Student students[], int student_count, char logged_in_id
 
     printf("Invalid credentials!\n");
     return 0; // Failure
+}
+void partialSearch(struct Student students[MAX_STUDENTS],int count)
+{
+    int i,found=0;
+    char search_term[MAX_NAME_LEN];
+    printf("Enter Search Query : ");
+    scanf(" %[^\n]",search_term);
+
+    for(i=0;i<count;i++)
+    {
+        if(strstr(students[i].name,search_term))
+        {
+            printf("ID: %d, Name: %s\n", students[i].id, students[i].name);
+            found=1;
+
+        }
+       
+    }
+     if(!found) printf("No matches found\n");
+
 }
 
