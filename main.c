@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include<ctype.h>
 
 #define MAX_STUDENTS 1000
 #define MAX_COURSES 5
@@ -44,6 +45,7 @@ struct Faculty {
 
 // Function prototypes
 
+void toLowerStr(char *dest, const char *src);
 void partialSearch(struct Student students[MAX_STUDENTS],int count);
 
 
@@ -609,15 +611,34 @@ int studentLogin(struct Student students[], int student_count, char logged_in_id
     printf("Invalid credentials!\n");
     return 0; // Failure
 }
+
+void toLowerStr(char *dest, const char *src) {
+    int i = 0;
+    while (src[i]) {
+        dest[i] = tolower(src[i]);
+        i++;
+    }
+    dest[i] = '\0';
+}
+
 void partialSearch(struct Student students[MAX_STUDENTS], int count)
 {
     int i, found = 0;
     char search_term[MAX_NAME_LEN];
-    printf("Enter Name or ID to search: ");
+    char search_term_lower[MAX_NAME_LEN];
+    char name_lower[MAX_NAME_LEN];
+    char id_lower[MAX_ID_LEN];
+
+    printf("Enter Search Query : ");
     scanf(" %[^\n]", search_term);
 
+    toLowerStr(search_term_lower, search_term);
+    
     for (i = 0; i < count; i++) {
-        if (strstr(students[i].name, search_term) || strstr(students[i].id, search_term)) {
+        toLowerStr(name_lower, students[i].name);
+        toLowerStr(id_lower, students[i].id);
+
+        if (strstr(name_lower, search_term_lower) || strstr(id_lower, search_term_lower)) {
             printf("\nName: %s\nID: %s\nDept: %s\nEmail: %s\n", 
                 students[i].name, students[i].id, students[i].dept, students[i].email);
 
@@ -638,3 +659,4 @@ void partialSearch(struct Student students[MAX_STUDENTS], int count)
     if (!found)
         printf("No matches found\n");
 }
+
