@@ -51,8 +51,6 @@ void partialSearch(struct Student students[MAX_STUDENTS],int count);
 void studentRegisterCourse(struct Student *student);
 
 
-
-
 int adminLogin();
 int facultyLogin(struct Faculty faculty[], int faculty_count, char logged_in_id[]);
 int studentLogin(struct Student student[], int student_count, char logged_in_id[]);
