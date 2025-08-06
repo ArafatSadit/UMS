@@ -46,6 +46,7 @@ struct Faculty {
 // Function prototypes
 
 void toLowerStr(char *dest, const char *src);
+void displayStudent(struct Student student);
 void partialSearch(struct Student students[MAX_STUDENTS],int count);
 
 
@@ -61,8 +62,6 @@ void addFaculty(struct Faculty faculty[], int *count);
 void registerCourses(struct Student students[], int count);
 void inputMarks(struct Student students[], int count);
 void calculateGrade(struct Student *student);
-void displayStudent(struct Student student);
-void searchStudent(struct Student students[], int count);
 void exportToFile(struct Student students[], int count);
 int validateMarks(float mark);
 char calculateLetterGrade(float total);
@@ -85,13 +84,9 @@ int main() {
     int role = ROLE_INVALID;
 
     // Load all data at the start
-   if (loadFaculty(faculty, &faculty_count)==1) {
-        printf("Loaded %d faculty records.\n", faculty_count);
-    }
+    loadFaculty(faculty, &faculty_count);
 
-    if (loadData(students, &student_count)) {
-        printf("Loaded %d student records.\n", student_count);
-    }
+    loadData(students, &student_count);
 
    
     int login_choice;
@@ -145,20 +140,16 @@ int main() {
             printf("2. Add Faculty\n");
             printf("3. Register Courses\n");
             printf("4. Input Marks\n");
-            printf("5. Search Student by Name\n");
-            printf("6. Display Student Record\n");
-            printf("7. Export Report\n");
-            printf("8. Save Data\n");
-            printf("9. Exit\n");
+            printf("5. Search and Display Student Record\n");
+            printf("6. Export Report\n");
+            printf("7. Exit\n");
         } else if(role == ROLE_FACULTY) {
           
             printf("1. Register Courses\n");
             printf("2. Input Marks\n");
-            printf("3. Search Student by Name\n");
-            printf("4. Display Student Record\n");
-            printf("5. Export Report\n");
-            printf("6. Save Data\n");
-            printf("7. Exit\n");
+            printf("3. Search and Display Student Record\n");
+            printf("4. Export Report\n");
+            printf("5. Exit\n");
         } else if(role == ROLE_STUDENT) {
             
             printf("1. Display My Info\n");
@@ -181,24 +172,20 @@ int main() {
                 case 3: registerCourses(students, student_count); break;
                 case 4: inputMarks(students, student_count); break;
                 case 5: partialSearch(students, student_count); break;
-                case 6:searchStudent(students,student_count);
-                case 7: exportToFile(students, student_count); break;
-                case 8: 
+                case 6: exportToFile(students, student_count); break;
+                case 7: 
                     saveData(students, student_count); 
                     saveFaculty(faculty, faculty_count);
                     break;
-                case 9: break;
                 default: printf("Invalid choice!\n");
             }
         } else if(role == ROLE_FACULTY) {
             switch(choice) {
                 case 1: registerCourses(students, student_count); break;
                 case 2: inputMarks(students, student_count); break;
-                case 3: partialSearch(students,student_count);break;
-                case 4: searchStudent(students, student_count); break;
-                case 5: exportToFile(students, student_count); break;
-                case 6: saveData(students, student_count); break;
-                case 7: break;
+                case 3: partialSearch(students, student_count); break;
+                case 4: exportToFile(students, student_count); break;
+                case 5: saveData(students, student_count); break;
                 default: printf("Invalid choice!\n");
             }
         } else if(role == ROLE_STUDENT) {
@@ -216,19 +203,19 @@ int main() {
                     break;
                 }
                 case 2: registerCourses(students, student_count); break; // autosuggesting would be good if we could implement this
-                case 3:  break;
+                case 3:saveData(students,student_count);break;
                 default: printf("Invalid choice!\n");
             }
         }
-    } while((role == ROLE_ADMIN && choice != 9) ||
-            (role == ROLE_FACULTY && choice != 7) ||
+    } while((role == ROLE_ADMIN && choice != 7)  ||
+            (role == ROLE_FACULTY && choice != 5)||
             (role == ROLE_STUDENT && choice != 3));
 
     
     saveData(students, student_count);
     saveFaculty(faculty, faculty_count);
     
-    printf("Exiting program...\n");
+    printf("Saving Data and Exiting program...\n");
     return 0;
 }
 
@@ -431,20 +418,6 @@ void displayStudent(struct Student student) {
     }
 }
 
-void searchStudent(struct Student students[], int count) {
-    char id[MAX_ID_LEN];
-    printf("Enter student ID: ");
-    scanf("%s", id);
-    
-    for(int i = 0; i < count; i++) {
-        if(strcmp(students[i].id, id) == 0) {
-            displayStudent(students[i]);
-            return;
-        }
-    }
-    printf("Student not found!\n");
-}
-
 void exportToFile(struct Student students[], int count) {
     char filename[100];
     printf("Enter output filename: ");
@@ -639,22 +612,12 @@ void partialSearch(struct Student students[MAX_STUDENTS], int count)
         toLowerStr(id_lower, students[i].id);
 
         if (strstr(name_lower, search_term_lower) || strstr(id_lower, search_term_lower)) {
-            printf("\nName: %s\nID: %s\nDept: %s\nEmail: %s\n", 
-                students[i].name, students[i].id, students[i].dept, students[i].email);
-
-            for (int j = 0; j < students[i].course_count; j++) {
-                printf("  %s: Quiz=%.1f, Mid=%.1f, Final=%.1f, Total=%.1f, Grade=%c\n",
-                    students[i].courses[j].code,
-                    students[i].courses[j].quiz,
-                    students[i].courses[j].midterm,
-                    students[i].courses[j].final,
-                    students[i].courses[j].total,
-                    students[i].courses[j].grade);
-            }
+            displayStudent(students[i]);
+        }
 
             found = 1;
         }
-    }
+    
 
     if (!found)
         printf("No matches found\n");
