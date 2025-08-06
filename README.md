@@ -1,8 +1,24 @@
-CSE-115 Lab Project
+# CSE-115 Lab Project
 
+### Group 6  
+📅 **Submission Date:** 12th August
 
-Group 6
+---
 
+## 🔐 Login Instructions
 
-Submission Date: 12th of August
+Start by logging in as an **admin**:
+
+- **Username:** `admin`  
+- **Password:** `admin123`
+
+## Roles Supported
+
+- **Admin**
+- **Faculty**
+- **Student**
+
+Each role sees different menu options based on access level.
+
+Will remove redundant functions such as searchStudent,displayStudent later
 
