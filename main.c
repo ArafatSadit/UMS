@@ -62,7 +62,7 @@ void addFaculty(struct Faculty faculty[], int *count);
 void inputMarks(struct Student students[], int count);
 void calculateGrade(struct Student *student);
 void exportToFile(struct Student students[], int count);
-int validateMarks(float mark);
+int validateMarks(float mark, float max);
 char calculateLetterGrade(float total);
 
 
@@ -222,7 +222,7 @@ void partialSearch(struct Student students[MAX_STUDENTS], int count)
     char name_lower[MAX_NAME_LEN];
     char id_lower[MAX_ID_LEN];
 
-    printf("Enter Search Query : ");
+    printf("Enter Student Name or ID : ");
     scanf(" %[^\n]", search_term);
 
     toLowerStr(search_term_lower, search_term);
@@ -234,6 +234,7 @@ void partialSearch(struct Student students[MAX_STUDENTS], int count)
         if (strstr(name_lower, search_term_lower) || strstr(id_lower, search_term_lower)) {
             displayStudent(students[i]);
              found = 1;
+             break;
         }
 
 
@@ -391,38 +392,69 @@ void inputMarks(struct Student students[], int count) {
     printf("Enter student ID: ");
     scanf("%s", id);
 
-    for(int i = 0; i < count; i++) {
-        if(strcmp(students[i].id, id) == 0) {
-            printf("Enter course code: ");
-            scanf("%s", course);
-
-            for(int j = 0; j < students[i].course_count; j++) {
-                if(strcmp(students[i].courses[j].code, course) == 0) {
-                    do {
-                        printf("Enter quiz marks (0-20): ");
-                        scanf("%f", &students[i].courses[j].quiz);
-                    } while(!validateMarks(students[i].courses[j].quiz));
-
-                    do {
-                        printf("Enter midterm marks (0-30): ");
-                        scanf("%f", &students[i].courses[j].midterm);
-                    } while(!validateMarks(students[i].courses[j].midterm));
-
-                    do {
-                        printf("Enter final marks (0-50): ");
-                        scanf("%f", &students[i].courses[j].final);
-                    } while(!validateMarks(students[i].courses[j].final));
-
-                    calculateGrade(&students[i]);
-                    return;
-                }
-            }
-            printf("Course not found!\n");
-            return;
+    int studentIndex = -1;
+    for (int i = 0; i < count; i++) {
+        if (strcmp(students[i].id, id) == 0) {
+            studentIndex = i;
+            break;
         }
     }
-    printf("Student not found!\n");
+    if (studentIndex == -1) {
+        printf("Student not found!\n");
+        return;
+    }
+
+    printf("Enter course code: ");
+    scanf("%s", course);
+
+    int courseIndex = -1;
+    for (int j = 0; j < students[studentIndex].course_count; j++) {
+        if (strcmp(students[studentIndex].courses[j].code, course) == 0) {
+            courseIndex = j;
+            break;
+        }
+    }
+    if (courseIndex == -1) {
+        printf("Course not found!\n");
+        return;
+    }
+
+    float q, m, f;
+
+    do {
+        printf("Enter quiz marks (0-20): ");
+        if (scanf("%f", &q) != 1) {
+            while(getchar() != '\n');
+            q = -1;
+        }
+    } while (!validateMarks(q, 20));
+
+    do {
+        printf("Enter midterm marks (0-30): ");
+        if (scanf("%f", &m) != 1) {
+            while(getchar() != '\n');
+            m = -1;
+        }
+    } while (!validateMarks(m, 30));
+
+    do {
+        printf("Enter final marks (0-50): ");
+        if (scanf("%f", &f) != 1) {
+            while(getchar() != '\n');
+            f = -1;
+        }
+    } while (!validateMarks(f, 50));
+
+    students[studentIndex].courses[courseIndex].quiz = q;
+    students[studentIndex].courses[courseIndex].midterm = m;
+    students[studentIndex].courses[courseIndex].final = f;
+    students[studentIndex].courses[courseIndex].total = q + m + f;
+    students[studentIndex].courses[courseIndex].grade = calculateLetterGrade(q + m + f);
+
+    printf("Marks updated successfully.\n");
 }
+
+
 
 void calculateGrade(struct Student *student) {
     for(int i = 0; i < student->course_count; i++) {
@@ -465,8 +497,12 @@ void exportToFile(struct Student students[], int count) {
     printf("Data exported successfully!\n");
 }
 
-int validateMarks(float mark) {
-    return (mark >= 0 && mark <= 100);
+int validateMarks(float mark, float max) {
+    if (mark < 0 || mark > max) {
+        printf("Invalid marks! Must be between 0 and %.1f\n", max);
+        return 0;
+    }
+    return 1;
 }
 
 char calculateLetterGrade(float total) {

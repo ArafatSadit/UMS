@@ -1,1 +1,25 @@
-0
+2
+Arafat Sadit
+2422128
+ECE
+arafat@mail.com
+001
+1
+CSE115
+18.0
+28.0
+50.0
+96.0
+A
+Asra Khaled
+2422129
+ECE
+asra@mail.com
+110
+1
+CSE115
+20.0
+27.0
+50.0
+97.0
+A
