@@ -3,13 +3,20 @@ Arafat Sadit
 EEE
 arafatsadit@gmail.com
 123
-1
-4.00
+2
+2.50
 CSE115
-19.0
-27.0
-44.0
-90.0
+5.0
+21.0
+33.0
+59.0
+D
+1.00
+PHY107
+17.0
+29.0
+48.0
+94.0
 A
 4.00
 Asra Khaled

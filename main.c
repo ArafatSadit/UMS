@@ -262,7 +262,7 @@ void registerCourses(struct Student students[], int count) {
             int new_course_index = students[i].course_count;
             scanf("%s", students[i].courses[new_course_index].code);
 
-            // FIX: Initialize marks for new course to prevent garbage values
+            // git commit 44: Initialize marks for new course to prevent garbage values
             students[i].courses[new_course_index].quiz = 0.0f;
             students[i].courses[new_course_index].midterm = 0.0f;
             students[i].courses[new_course_index].final = 0.0f;
@@ -549,7 +549,7 @@ int validateMarks(float mark, float max) {
         printf("Invalid marks, must be between 0 and %.1f\n", max);
         return 0;
     }
-    return 1;
+    else return 1;
 }
 
 int loadFaculty(struct Faculty faculty[], int *count) {
@@ -601,7 +601,7 @@ int loadData(struct Student students[], int *count) {
         fscanf(file, "%f", &students[*count].cgpa);
 
         for (int j = 0; j < students[*count].course_count; j++) {
-            // Use %s to robustly read the single-token course code for consistency and robustness.
+            // fixed: used %s instead to robustly read the single token course code for consistency and robustness.
             fscanf(file, "%s", students[*count].courses[j].code);
             fscanf(file, "%f", &students[*count].courses[j].quiz);
             fscanf(file, "%f", &students[*count].courses[j].midterm);
