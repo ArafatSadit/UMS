@@ -1,0 +1,15 @@
+Name: Arafat Sadit
+ID: 242
+Dept: ECE
+Email: arafatsadit@gmail.com
+Courses:
+  CSE115: Quiz=20.0, Mid=27.0, Final=48.0, Total=95.0, Grade=A, GP=4.00
+CGPA: 4.00
+
+Name: Asra Khaled
+ID: 243
+Dept: ECE
+Email: asra@protonmail.com
+Courses:
+CGPA: 0.00
+
