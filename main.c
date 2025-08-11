@@ -134,8 +134,8 @@ int main() {
                 switch (choice) {
                     case 1: addStudent(students, &student_count); saveData(students, student_count); break;
                     case 2: addFaculty(faculty, &faculty_count); saveFaculty(faculty, faculty_count); break;
-                    case 3: registerCourses(students, student_count); break;
-                    case 4: inputMarks(students, student_count); break;
+                    case 3: registerCourses(students, student_count); saveData(students, student_count); break;
+                    case 4: inputMarks(students, student_count); saveData(students, student_count); break;
                     case 5: partialSearch(students, student_count); break;
                     case 6: exportToFile(students, student_count); break;
                     case 7: role = ROLE_INVALID; break;
@@ -168,6 +168,7 @@ int main() {
                         for (int i = 0; i < student_count; i++) {
                             if (strcmp(students[i].id, user_id) == 0) {
                                 studentRegisterCourse(&students[i]);
+                                saveData(students, student_count); // Save after registration
                                 found = 1;
                                 break;
                             }
@@ -202,15 +203,19 @@ void displayStudent(struct Student student) {
            student.name, student.id, student.dept, student.email);
 
     printf("\nCourses:\n");
-    for (int i = 0; i < student.course_count; i++) {
-        printf("  %s: Quiz=%.1f, Mid=%.1f, Final=%.1f, Total=%.1f, Grade=%c, GP=%.2f\n",
-               student.courses[i].code,
-               student.courses[i].quiz,
-               student.courses[i].midterm,
-               student.courses[i].final,
-               student.courses[i].total,
-               student.courses[i].grade,
-               student.courses[i].gp);
+    if (student.course_count == 0) {
+        printf("  No courses registered yet.\n");
+    } else {
+        for (int i = 0; i < student.course_count; i++) {
+            printf("  %s: Quiz=%.1f, Mid=%.1f, Final=%.1f, Total=%.1f, Grade=%c, GP=%.2f\n",
+                   student.courses[i].code,
+                   student.courses[i].quiz,
+                   student.courses[i].midterm,
+                   student.courses[i].final,
+                   student.courses[i].total,
+                   student.courses[i].grade,
+                   student.courses[i].gp);
+        }
     }
     printf("CGPA: %.2f\n", student.cgpa);
 }
@@ -234,7 +239,6 @@ void partialSearch(struct Student students[MAX_STUDENTS], int count) {
         if (strstr(name_lower, search_term_lower) || strstr(id_lower, search_term_lower)) {
             displayStudent(students[i]);
             found = 1;
-            break;
         }
     }
 
@@ -255,7 +259,14 @@ void registerCourses(struct Student students[], int count) {
             }
 
             printf("Enter course code: ");
-            scanf("%s", students[i].courses[students[i].course_count].code);
+            int new_course_index = students[i].course_count;
+            scanf("%s", students[i].courses[new_course_index].code);
+
+            // FIX: Initialize marks for new course to prevent garbage values
+            students[i].courses[new_course_index].quiz = 0.0f;
+            students[i].courses[new_course_index].midterm = 0.0f;
+            students[i].courses[new_course_index].final = 0.0f;
+            
             students[i].course_count++;
             calculateGrade(&students[i]);
             printf("Course registered!\n");
@@ -266,17 +277,22 @@ void registerCourses(struct Student students[], int count) {
 }
 
 void studentRegisterCourse(struct Student *student) {
-    if ((*student).course_count >= MAX_COURSES) {
+    if (student->course_count >= MAX_COURSES) {
         printf("Maximum courses reached!\n");
         return;
     }
 
     printf("Enter course code: ");
-    scanf("%s", (*student).courses[(*student).course_count].code);
-    (*student).course_count++;
+    int new_course_index = student->course_count;
+    scanf("%s", student->courses[new_course_index].code);
 
+   
+    student->courses[new_course_index].quiz = 0.0f;
+    student->courses[new_course_index].midterm = 0.0f;
+    student->courses[new_course_index].final = 0.0f;
+
+    student->course_count++;
     calculateGrade(student);
-
     printf("Course registered!\n");
 }
 
@@ -585,7 +601,8 @@ int loadData(struct Student students[], int *count) {
         fscanf(file, "%f", &students[*count].cgpa);
 
         for (int j = 0; j < students[*count].course_count; j++) {
-            fscanf(file, " %[^\n]", students[*count].courses[j].code);
+            // Use %s to robustly read the single-token course code for consistency and robustness.
+            fscanf(file, "%s", students[*count].courses[j].code);
             fscanf(file, "%f", &students[*count].courses[j].quiz);
             fscanf(file, "%f", &students[*count].courses[j].midterm);
             fscanf(file, "%f", &students[*count].courses[j].final);
