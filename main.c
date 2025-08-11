@@ -84,8 +84,7 @@ int main() {
     loadFaculty(faculty, &faculty_count);
     loadData(students, &student_count);
 
-    int running = 1;
-    while (running) {
+    while (1) {
         while (role == ROLE_INVALID) {
             int login_choice;
             printf("\n--- University Login Portal ---\n");
@@ -109,6 +108,7 @@ int main() {
                     break;
                 case 4:
                     printf("Exiting...\n");
+                    saveData(students,student_count);saveFaculty(faculty,faculty_count);
                     return 0;
                 default:
                     printf("Invalid choice.\n");
@@ -132,7 +132,7 @@ int main() {
 
             if (role == ROLE_ADMIN) {
                 switch (choice) {
-                    case 1: addStudent(students, &student_count); break;
+                    case 1: addStudent(students, &student_count);saveData(students, student_count); break;
                     case 2: addFaculty(faculty, &faculty_count); saveFaculty(faculty, faculty_count); break;
                     case 3: registerCourses(students, student_count); break;
                     case 4: inputMarks(students, student_count); break;
@@ -144,7 +144,7 @@ int main() {
                 }
             } else if (role == ROLE_FACULTY) {
                 switch (choice) {
-                    case 1: inputMarks(students, student_count); break;
+                    case 1: inputMarks(students, student_count);saveData(students, student_count); break;
                     case 2: partialSearch(students, student_count); break;
                     case 3: exportToFile(students, student_count); break;
                     case 4: role = ROLE_INVALID; break;
