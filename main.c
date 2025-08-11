@@ -633,7 +633,7 @@ void saveData(struct Student students[], int count) {
                 students[i].course_count,
                 students[i].cgpa);
 
-        for (int j = 0; j < students[i].course_count; j++) {
+        for (int j = 0; j < students[i].course_count;j++) {
             fprintf(file, "%s\n%.1f\n%.1f\n%.1f\n%.1f\n%c\n%.2f\n",
                     students[i].courses[j].code,
                     students[i].courses[j].quiz,
