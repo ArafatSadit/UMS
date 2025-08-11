@@ -1,5 +1,6 @@
 # Compiled object files
 *.o
+.girignore
 
 # Compiled executable
 a.out
