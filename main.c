@@ -262,7 +262,7 @@ void registerCourses(struct Student students[], int count) {
             int new_course_index = students[i].course_count;
             scanf("%s", students[i].courses[new_course_index].code);
 
-            // git commit 44: Initialize marks for new course to prevent garbage values
+            // git commit 44: Initialize marks for new course to prevent garbage values when compiled in windows
             students[i].courses[new_course_index].quiz = 0.0f;
             students[i].courses[new_course_index].midterm = 0.0f;
             students[i].courses[new_course_index].final = 0.0f;
